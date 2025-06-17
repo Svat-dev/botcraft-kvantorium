@@ -3,8 +3,9 @@ import logging
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters.command import Command
 from datetime import datetime
+
 from config import config
-from data import kb
+from data import kb, redis
 
 logging.basicConfig(level=logging.INFO)
 
@@ -21,6 +22,15 @@ async def cmd_start(message: types.Message):
     )
 
     await message.answer("Как быстро вы хотите получить IPhone 16 Pro Max?", reply_markup=keyboard)
+
+    is_user_in_system = redis.get(message.from_user.id)
+
+    if not is_user_in_system:
+        await message.answer("Вы не в системе")
+        return False
+    
+    current_role = is_user_in_system.get("role")
+    await message.answer(current_role)
 
 @dp.message(F.text.lower() == "быстро")
 async def make_it_fast(message: types.Message):
