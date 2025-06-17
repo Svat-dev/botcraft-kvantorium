@@ -5,11 +5,10 @@ class EnumUserRole:
     ADMIN = "admin"
     REGULAR = "regular"
 
-type TRedis = dict[int, dict["role": EnumUserRole]]
-
-redis: TRedis = {
-    5478105927: {"role": EnumUserRole.MODER}
-}
+redis = [
+    {0: {"role": "none"}},
+    {5478105927: {"role": EnumUserRole.MODER, "passwrod": "12345678"}}
+]
 
 kb = [
         [

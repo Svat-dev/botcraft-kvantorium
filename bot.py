@@ -32,6 +32,20 @@ async def cmd_start(message: types.Message):
     current_role = is_user_in_system.get("role")
     await message.answer(current_role)
 
+@dp.message(Command("register"))
+async def register(message: types.Message):
+    is_auth = redis.sort(message.from_user.id or 0)
+    print(is_auth)
+    # if is_auth != "none":
+    #     await message.reply("Вы уже в системе")
+    #     return False
+    
+    await message.reply("Идет создание...")
+
+    user_id = message.from_user.id
+    redis.append(user_id)
+    print(redis)
+
 @dp.message(F.text.lower() == "быстро")
 async def make_it_fast(message: types.Message):
     await message.reply("С вас дополнительно 10 руб.")
