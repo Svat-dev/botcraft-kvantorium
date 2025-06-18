@@ -10,9 +10,10 @@ class EnumCommands:
     REGISTER = "register"
     LOGOUT = "logout"
 
+
 class EnumUserRoles:
     GUEST = "Гость"
-    MENTOR = "Преподователь"
+    MENTOR = "Преподаватель"
     STUDENT = "Ученик"
     MODER = "Организатор"
     ADMIN = "Админ"
