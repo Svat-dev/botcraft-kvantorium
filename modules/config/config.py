@@ -1,7 +1,10 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr
 
-from aiogram import Bot
+import logging
+
+from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.memory import MemoryStorage
 
 
 class Settings(BaseSettings):
@@ -10,5 +13,9 @@ class Settings(BaseSettings):
 
 
 config = Settings()
+storage = MemoryStorage()
+
+logging.basicConfig(level=logging.INFO)
 
 bot = Bot(token=config.bot_token.get_secret_value())
+dp = Dispatcher(storage=storage)

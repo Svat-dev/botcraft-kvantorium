@@ -41,23 +41,23 @@ def get_events_data(file_path: str = "data.json") -> dict:
 
     return data["events"].get
 
+
 def get_event(event_id: str) -> dict:
     events = get_events_data()
 
     return events.get(event_id)
 
+
 def create_event(date: str, max: int, duration: str, desc: str, name: str):
     data = read_data()
     id = uuid.uuid4()
 
-    data["events"] = {
-        id: {
-            "date": date,
-            "participants_limit": max,
-            "title": name,
-            "desc": desc,
-            "duration": duration
-        }
+    data["events"][str(id)] = {
+        "date": date,
+        "participants_limit": max,
+        "title": name,
+        "desc": desc,
+        "duration": duration,
     }
 
     write_data(data)
@@ -73,17 +73,18 @@ def create_user(
             "pwd": password,
             "role": str(_role),
             "events": [],
-            "created_at": datetime(1900, 1, 1).now().date().isoformat()
+            "created_at": datetime(1900, 1, 1).now().date().isoformat(),
         }
     }
 
     write_data(data)
+
 
 def remove_user(user_id: int) -> bool:
     data = read_data()
 
     if str(user_id) not in data["users"]:
         return False
-    
+
     data["users"].pop(str(user_id))
     write_data(data)

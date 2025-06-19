@@ -9,7 +9,7 @@ class EnumCommands:
     LOGIN = "login"
     REGISTER = "register"
     LOGOUT = "logout"
-    PROFILE = "get_profile"
+    PROFILE = "profile"
 
 
 class EnumUserRoles:
@@ -18,3 +18,7 @@ class EnumUserRoles:
     STUDENT = "Ученик"
     MODER = "Организатор"
     ADMIN = "Админ"
+
+
+class EnumStorageTokens:
+    COMMAND_IN_ACTION = "command_in_action"
