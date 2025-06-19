@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 from typing import Dict, Optional
 from modules.constants import EnumUserRoles
 
@@ -35,8 +36,26 @@ def get_user_data(user_id: int, file_path: str = "data.json") -> Optional[Dict]:
 
 
 def create_user(
-    user_id: int, password: str, role: EnumUserRoles = EnumUserRoles.STUDENT
+    user_id: int, password: str, _role: EnumUserRoles = EnumUserRoles.STUDENT
 ):
-    data = {id: str(user_id), password: password, role: EnumUserRoles.STUDENT}
+    data = read_data()
 
+    data["users"] = {
+        str(user_id): {
+            "pwd": password,
+            "role": str(_role),
+            "events": [],
+            "created_at": datetime(1900, 1, 1).now().date().isoformat()
+        }
+    }
+
+    write_data(data)
+
+def remove_user(user_id: int) -> bool:
+    data = read_data()
+
+    if str(user_id) not in data["users"]:
+        return False
+    
+    data["users"].pop(str(user_id))
     write_data(data)

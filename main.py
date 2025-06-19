@@ -3,7 +3,8 @@ import logging
 from aiogram import Dispatcher, types, F
 from aiogram.filters.command import Command
 
-from modules.commands import CommandStart, CommandInfo, CommandRegister
+from modules.callbacks import CallbackLogout
+from modules.commands import CommandLogout, CommandMyProfile, CommandStart, CommandInfo, CommandRegister
 from modules.config.config import bot
 from modules.config.json import init_json
 from modules.constants import EnumCommands, EnumUserRoles
@@ -29,11 +30,21 @@ async def cmd_info(msg: types.Message):
 async def cmd_register(msg: types.Message):
     return await CommandRegister(msg, False)
 
-
-@dp.message(F.text.startswith("пароль:"))
+@dp.message(F.text.startswith("рпароль:"))
 async def cmd_continue_register(msg: types.Message):
     return await CommandRegister(msg, True)
 
+@dp.message(Command(EnumCommands.LOGOUT))
+async def cmd_logout(msg: types.Message):
+    return await CommandLogout(msg)
+
+@dp.message(F.text.lower().endswith(" аккаунт"))
+async def logout_callback_handler(msg: types.Message):
+    return await CallbackLogout(msg)
+
+@dp.message(Command(EnumCommands.PROFILE))
+async def cmd_get_profile(msg: types.Message):
+    return await CommandMyProfile(msg)
 
 async def main():
     await dp.start_polling(bot)

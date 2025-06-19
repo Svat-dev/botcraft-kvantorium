@@ -9,6 +9,7 @@ class EnumCommands:
     LOGIN = "login"
     REGISTER = "register"
     LOGOUT = "logout"
+    PROFILE = "get_profile"
 
 
 class EnumUserRoles:
