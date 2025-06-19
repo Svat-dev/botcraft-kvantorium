@@ -4,7 +4,7 @@ from aiogram import Dispatcher, types, F
 from aiogram.filters.command import Command
 
 from modules.callbacks import CallbackLogout
-from modules.commands import CommandLogout, CommandMyProfile, CommandStart, CommandInfo, CommandRegister
+from modules.commands import CommandCreateEvent, CommandLogout, CommandMyProfile, CommandStart, CommandInfo, CommandRegister
 from modules.config.config import bot
 from modules.config.json import init_json
 from modules.constants import EnumCommands, EnumUserRoles
@@ -45,6 +45,14 @@ async def logout_callback_handler(msg: types.Message):
 @dp.message(Command(EnumCommands.PROFILE))
 async def cmd_get_profile(msg: types.Message):
     return await CommandMyProfile(msg)
+
+@dp.message(Command(EnumCommands.CREATE_EVENT))
+async def cmd_create_event(msg: types.Message):
+    return await CommandCreateEvent(msg, False)
+
+@dp.message(F.text.startswith("Ивент "))
+async def cmd_create_event(msg: types.Message):
+    return await CommandCreateEvent(msg, True)
 
 async def main():
     await dp.start_polling(bot)

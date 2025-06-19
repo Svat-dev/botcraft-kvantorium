@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from typing import Dict, Optional
 from modules.constants import EnumUserRoles
+import uuid
 
 
 def init_json(file_path: str = "data.json"):
@@ -33,6 +34,33 @@ def get_user_data(user_id: int, file_path: str = "data.json") -> Optional[Dict]:
     data = read_data(file_path)
 
     return data["users"].get(str(user_id))
+
+
+def get_events_data(file_path: str = "data.json") -> dict:
+    data = read_data(file_path)
+
+    return data["events"].get
+
+def get_event(event_id: str) -> dict:
+    events = get_events_data()
+
+    return events.get(event_id)
+
+def create_event(date: str, max: int, duration: str, desc: str, name: str):
+    data = read_data()
+    id = uuid.uuid4()
+
+    data["events"] = {
+        id: {
+            "date": date,
+            "participants_limit": max,
+            "title": name,
+            "desc": desc,
+            "duration": duration
+        }
+    }
+
+    write_data(data)
 
 
 def create_user(
