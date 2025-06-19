@@ -1,8 +1,14 @@
 from aiogram import types
 
-from modules.config.json import remove_user, create_user
+from modules.config.json import (
+    remove_user,
+    create_user,
+    get_user_data,
+    update_user,
+    get_event,
+)
 from modules.config.config import dp
-from modules.constants import EnumStorageTokens, EnumCommands
+from modules.constants import EnumStorageTokens, EnumCommands, EnumUserRoles
 
 
 async def CallbackLogout(msg: types.Message):
@@ -71,8 +77,20 @@ async def CallbackCreateEvent(msg: types.Message):
 
 
 async def CallbackRegisterToEvent(callback: types.CallbackQuery):
-    user_id = await dp.storage.get_data(EnumStorageTokens.USER_ID)
-    event_id = callback.data.split(":")[1]
+    local = await dp.storage.get_data(EnumStorageTokens.USER_ID)
     msg = callback.message
 
-    await msg.answer(event_id, user_id)
+    user_id = local["data"]
+    user = get_user_data(user_id)
+
+    if user["role"] != EnumUserRoles.STUDENT:
+        return await msg.answer("Вы не студент")
+
+    event_id = callback.data.split(":")[1]
+    event = get_event(event_id)
+
+    if event_id in user["events"]:
+        return await msg.answer("Вы уже зарегистрированы на этот ивент")
+
+    update_user(user_id, "events", {event_id: {}})
+    await msg.answer(f'Вы успешно зарегистрировались на ивент "{event["title"]}"!')

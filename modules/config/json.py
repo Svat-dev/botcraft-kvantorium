@@ -24,8 +24,10 @@ def write_data(data: dict, file_path: str = "data.json"):
 
 def update_user(user_id: int, key: str, value, file_path: str = "data.json"):
     data = read_data(file_path)
+
     if str(user_id) not in data["users"]:
         data["users"][str(user_id)] = {}
+
     data["users"][str(user_id)][key] = value
     write_data(data, file_path)
 

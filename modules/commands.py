@@ -21,7 +21,7 @@ async def CommandStart(msg: types.Message):
         {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.START},
     )
 
-    await dp.storage.set_data(f"{EnumStorageTokens.USER_ID}", str(user_id))
+    await dp.storage.set_data(f"{EnumStorageTokens.USER_ID}", {"data": str(user_id)})
 
     await msg.answer(
         "Привет, чтобы начать,\nвведи любую команду из предложенных в меню"
