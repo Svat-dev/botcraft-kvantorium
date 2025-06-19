@@ -7,6 +7,7 @@ from modules.config.json import (
     read_data,
     update_user,
     get_events_data,
+    get_event,
 )
 from modules.constants import EnumUserRoles, EnumStorageTokens, EnumCommands
 from modules.config.config import dp
@@ -82,10 +83,21 @@ async def CommandMyProfile(msg: types.Message):
     user = get_user_data(user_id)
 
     if not user:
-        await msg.reply("Для этого надо авторизоваться!")
+        return await msg.reply("Для этого надо авторизоваться!")
+
+    event_names = []
+
+    for id in user["events"]:
+        event = get_event(id)
+        event_names.append(event["title"])
+
+    if not event_names:
+        events = "Нет ивентов"
+    else:
+        events = ", ".join(event_names)
 
     await msg.reply(
-        f"ID: {user_id}\nДата создания {user["created_at"].replace("-", " / ")}\nРоль: {user["role"]}\nИвенты:"
+        f"ID: {user_id}\nДата создания {user["created_at"].replace("-", " / ")}\nРоль: {user["role"]}\nИвенты: {events}\n"
     )
 
 
