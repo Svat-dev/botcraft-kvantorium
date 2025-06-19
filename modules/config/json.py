@@ -39,7 +39,7 @@ def get_user_data(user_id: int, file_path: str = "data.json") -> Optional[Dict]:
 def get_events_data(file_path: str = "data.json") -> dict:
     data = read_data(file_path)
 
-    return data["events"].get
+    return data["events"]
 
 
 def get_event(event_id: str) -> dict:

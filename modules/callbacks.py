@@ -68,3 +68,11 @@ async def CallbackCreateEvent(msg: types.Message):
     )
 
     return await msg.answer("Ивент успешно создан!")
+
+
+async def CallbackRegisterToEvent(callback: types.CallbackQuery):
+    user_id = await dp.storage.get_data(EnumStorageTokens.USER_ID)
+    event_id = callback.data.split(":")[1]
+    msg = callback.message
+
+    await msg.answer(event_id, user_id)

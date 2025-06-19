@@ -3,7 +3,12 @@ import asyncio
 from aiogram import types, F
 from aiogram.filters.command import Command
 
-from modules.callbacks import CallbackLogout, CallbackRegister, CallbackCreateEvent
+from modules.callbacks import (
+    CallbackLogout,
+    CallbackRegister,
+    CallbackCreateEvent,
+    CallbackRegisterToEvent,
+)
 from modules.commands import (
     CommandCreateEvent,
     CommandLogout,
@@ -11,6 +16,7 @@ from modules.commands import (
     CommandStart,
     CommandInfo,
     CommandRegister,
+    CommandGetEvents,
 )
 from modules.config.config import bot, storage, dp
 from modules.config.json import init_json
@@ -22,10 +28,6 @@ init_json()
 
 @dp.message(Command(EnumCommands.START))
 async def cmd_start(msg: types.Message):
-    await dp.storage.set_data(
-        str(msg.from_user.id),
-        {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.START},
-    )
     return await CommandStart(msg)
 
 
@@ -67,6 +69,16 @@ async def cmd_create_event(msg: types.Message):
 @dp.message(F.text.startswith("Ивент "))
 async def cmd_create_event(msg: types.Message):
     return await CallbackCreateEvent(msg)
+
+
+@dp.message(Command(EnumCommands.EVENTS))
+async def cmd_get_events(msg: types.Message):
+    return await CommandGetEvents(msg)
+
+
+@dp.callback_query(F.data.split(":")[0] == "register_to_event")
+async def register_to_event(callback: types.CallbackQuery):
+    return await CallbackRegisterToEvent(callback)
 
 
 async def main():

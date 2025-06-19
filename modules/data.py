@@ -1,4 +1,6 @@
 from aiogram import types
+from aiogram.utils.keyboard import InlineKeyboardBuilder
+
 from modules.constants import EnumUserRoles, EnumCommands
 
 
@@ -58,3 +60,16 @@ def get_main_kb(role: EnumUserRoles) -> list[types.BotCommand]:
             types.BotCommand(command=EnumCommands.LOGOUT, description="Выйти"),
             types.BotCommand(command=EnumCommands.EVENTS, description="Все события"),
         ]
+
+
+def get_events_inline_kb(event_id: str) -> InlineKeyboardBuilder:
+    builder = InlineKeyboardBuilder()
+
+    builder.add(
+        types.InlineKeyboardButton(
+            text="Зарегистрироваться",
+            callback_data=f"register_to_event:{event_id}",
+        ),
+    )
+
+    return builder

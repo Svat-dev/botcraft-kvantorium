@@ -22,3 +22,4 @@ class EnumUserRoles:
 
 class EnumStorageTokens:
     COMMAND_IN_ACTION = "command_in_action"
+    USER_ID = "user_id"

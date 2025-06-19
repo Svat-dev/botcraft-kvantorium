@@ -6,12 +6,23 @@ from modules.config.json import (
     create_user,
     read_data,
     update_user,
+    get_events_data,
 )
 from modules.constants import EnumUserRoles, EnumStorageTokens, EnumCommands
 from modules.config.config import dp
+from modules.data import get_events_inline_kb
 
 
 async def CommandStart(msg: types.Message):
+    user_id = msg.from_user.id
+
+    await dp.storage.set_data(
+        str(user_id),
+        {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.START},
+    )
+
+    await dp.storage.set_data(f"{EnumStorageTokens.USER_ID}", str(user_id))
+
     await msg.answer(
         "Привет, чтобы начать,\nвведи любую команду из предложенных в меню"
     )
@@ -92,3 +103,26 @@ async def CommandCreateEvent(msg: types.Message):
     return await msg.reply(
         "Чтобы создать ивент отправьте сообщение в таком формате:\nИвент - [название]/[описание]/[макс. участников][дата проведения (год|день|месяц)]/[время проведения (часы:минуты)]/[длительность (часы:минуты)]"
     )
+
+
+async def CommandGetEvents(msg: types.Message):
+    user_id = msg.from_user.id
+    user = get_user_data(user_id)
+
+    if user["role"] == EnumUserRoles.GUEST:
+        return await msg.reply("У вас недостаточно прав!")
+
+    events = get_events_data().items()
+    await msg.reply("Все доступные ивенты:")
+
+    for id, event in events:
+        date = event["date"].split(" / ")[0]
+        time_start = event["date"].split(" / ")[1]
+        hours = int(time_start.split(":")[0]) + int(event["duration"].split(":")[0])
+        mins = int(time_start.split(":")[1]) + int(event["duration"].split(":")[1])
+        time_end = f"{hours}:{mins}"
+
+        await msg.answer(
+            text=f"{event['title']}\n{event["desc"]}\nДата: {date} {time_start} - {time_end}\nМакс. участников: {event["participants_limit"]}",
+            reply_markup=get_events_inline_kb(id).as_markup(),
+        )
