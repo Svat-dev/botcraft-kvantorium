@@ -1,6 +1,6 @@
 from aiogram import types
 
-from datetime import datetime, time
+from datetime import datetime
 
 from modules.config.json import (
     get_user_data,
@@ -170,15 +170,14 @@ async def CommandGetActiveEvents(msg: types.Message):
     await msg.reply("Текущие мероприятия:")
 
     for id, event in events.items():
-        time_start_str = event["date"].split("/")[1].replace(" ", "")
-        time_start = datetime.strptime("12:00", "%H:%M").timestamp()
-        time_start_ms = int(time_start * 1000)
+        date = event["date"].split("/")[0].replace(" ", "")
+        date_str = event["date"].replace(" ", "")
 
-        time_end = datetime.strptime(event["duration"], "%HH:%MM").timestamp()
-        time_end_ms = int(time_end * 1000)
-        current_date_ms = int(time.time() * 1000)
+        date_start = datetime.strptime(date_str, "%Y.%m.%d/%H:%M")
+        date_end = datetime.strptime(f"{date}/{event["duration"]}", "%Y.%m.%d/%H:%M")
+        date_current = datetime(1900, 1, 1).today()
 
-        if time_start_ms > current_date_ms and time_end_ms < current_date_ms:
+        if date_start < date_current and date_end > date_current:
             await msg.answer(f"{index}. {event["title"]}")
             index += 1
 
