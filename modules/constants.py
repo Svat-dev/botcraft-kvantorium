@@ -4,6 +4,7 @@ class EnumCommands:
     INFO = "info"
     CREATE_EVENT = "create_event"
     EVENTS = "events"
+    ACTIVE_EVENTS = "active_events"
     ASK = "ask"
     VOTE_PROJECT = "vote_project"
     REGISTER = "register"

@@ -1,5 +1,7 @@
 from aiogram import types
 
+from datetime import datetime, time
+
 from modules.config.json import (
     get_user_data,
     get_events_data,
@@ -153,6 +155,35 @@ async def CommandGetEvents(msg: types.Message):
             text=f"{event['title']}\n{event["desc"]}\nДата: {date} {time_start} - {time_end}\n{participants}\nНаставник: {mentor_name}",
             reply_markup=get_events_inline_kb(id).as_markup(),
         )
+
+
+async def CommandGetActiveEvents(msg: types.Message):
+    user_id = msg.from_user.id
+    user = get_user_data(user_id)
+
+    if user["role"] == EnumUserRoles.GUEST:
+        return await msg.reply("Вам необходимо авторизваться")
+
+    events = get_events_data()
+    index: int = 1
+
+    await msg.reply("Текущие мероприятия:")
+
+    for id, event in events.items():
+        time_start_str = event["date"].split("/")[1].replace(" ", "")
+        time_start = datetime.strptime("12:00", "%H:%M").timestamp()
+        time_start_ms = int(time_start * 1000)
+
+        time_end = datetime.strptime(event["duration"], "%HH:%MM").timestamp()
+        time_end_ms = int(time_end * 1000)
+        current_date_ms = int(time.time() * 1000)
+
+        if time_start_ms > current_date_ms and time_end_ms < current_date_ms:
+            await msg.answer(f"{index}. {event["title"]}")
+            index += 1
+
+    if index == 1:
+        return await msg.answer("Сейчас нет активных мероприятий")
 
 
 async def CommandAddProjectsMentor(msg: types.Message):

@@ -15,6 +15,7 @@ from modules.commands import (
     CommandAddMentor,
     CommandCancel,
     CommandCreateEvent,
+    CommandGetActiveEvents,
     CommandGetMentors,
     CommandLogout,
     CommandMyProfile,
@@ -85,6 +86,11 @@ async def cmd_create_event(msg: types.Message):
 @dp.message(Command(EnumCommands.EVENTS))
 async def cmd_get_events(msg: types.Message):
     return await CommandGetEvents(msg)
+
+
+@dp.message(Command(EnumCommands.ACTIVE_EVENTS))
+async def cmd_get_active_events(msg: types.Message):
+    return await CommandGetActiveEvents(msg)
 
 
 @dp.callback_query(F.data.split(":")[0] == "register_to_event")
