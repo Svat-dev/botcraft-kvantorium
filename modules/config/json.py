@@ -57,6 +57,8 @@ def create_event(date: str, max: int, duration: str, desc: str, name: str):
     data["events"][str(id)] = {
         "date": date,
         "participants_limit": max,
+        "participants": {},
+        "mentor_id": "",
         "title": name,
         "desc": desc,
         "duration": duration,
@@ -65,14 +67,27 @@ def create_event(date: str, max: int, duration: str, desc: str, name: str):
     write_data(data)
 
 
+def update_event(event_id: int, key: str, value, file_path: str = "data.json"):
+    data = read_data(file_path)
+
+    if event_id not in data["events"]:
+        data["events"][event_id] = {}
+
+    data["users"][event_id][key] = value
+    write_data(data, file_path)
+
+
 def create_user(
-    user_id: int, password: str, _role: EnumUserRoles = EnumUserRoles.STUDENT
+    user_id: int, name: str, _role: EnumUserRoles = EnumUserRoles.STUDENT
 ):
     data = read_data()
+    first_name = name.split()[1]
+    last_name = name.split()[0]
 
     data["users"] = {
         str(user_id): {
-            "pwd": password,
+            "first_name": first_name,
+            "last_name": last_name,
             "role": str(_role),
             "events": [],
             "created_at": datetime(1900, 1, 1).now().date().isoformat(),

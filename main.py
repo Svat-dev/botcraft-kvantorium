@@ -41,7 +41,7 @@ async def cmd_register(msg: types.Message):
     return await CommandRegister(msg)
 
 
-@dp.message(F.text.startswith("рпароль:"))
+@dp.message(F.text.startswith("ФИО:"))
 async def cmd_continue_register(msg: types.Message):
     return await CallbackRegister(msg)
 

@@ -1,11 +1,7 @@
 from aiogram import types
 
 from modules.config.json import (
-    create_event,
     get_user_data,
-    create_user,
-    read_data,
-    update_user,
     get_events_data,
     get_event,
 )
@@ -51,7 +47,7 @@ async def CommandRegister(msg: types.Message):
         {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.REGISTER},
     )
 
-    await msg.reply('Придумайте пароль, запишите его как "рпароль: [ваш пароль]"')
+    await msg.reply('Напишите свое ФИО в таком формате "ФИО: [фамилия] [имя]"')
 
 
 async def CommandLogout(msg: types.Message):

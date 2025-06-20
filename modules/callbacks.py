@@ -4,8 +4,11 @@ from modules.config.json import (
     remove_user,
     create_user,
     get_user_data,
+    update_event,
     update_user,
     get_event,
+    read_data,
+    create_event
 )
 from modules.config.config import dp
 from modules.constants import EnumStorageTokens, EnumCommands, EnumUserRoles
@@ -41,8 +44,8 @@ async def CallbackRegister(msg: types.Message):
     if str(user_id) in data["users"]:
         return await msg.reply("Такой пользователь уже существует")
 
-    password = msg.text.split(" ")[1]
-    create_user(user_id, password, EnumUserRoles.MENTOR)
+    name = msg.text.split(":")
+    create_user(user_id, name, EnumUserRoles.STUDENT)
 
     await msg.reply("Аккаунт успешно создан!")
     return await dp.storage.update_data(
@@ -92,5 +95,6 @@ async def CallbackRegisterToEvent(callback: types.CallbackQuery):
     if event_id in user["events"]:
         return await msg.answer("Вы уже зарегистрированы на этот ивент")
 
+    update_event(event_id, "participants", {str(user): {}})
     update_user(user_id, "events", {event_id: {}})
     await msg.answer(f'Вы успешно зарегистрировались на ивент "{event["title"]}"!')
