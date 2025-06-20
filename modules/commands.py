@@ -3,13 +3,15 @@ from aiogram import types
 from datetime import datetime
 
 from modules.config.json import (
+    create_question,
+    get_event_by_name,
     get_user_data,
     get_events_data,
     get_event,
     get_users,
 )
 from modules.constants import EnumUserRoles, EnumStorageTokens, EnumCommands
-from modules.config.config import dp
+from modules.config.config import dp, bot
 from modules.data import get_events_inline_kb
 
 
@@ -269,3 +271,60 @@ async def CommandGetMentors(msg: types.Message):
 
     await msg.reply("Вот все преподаватели:")
     return await msg.answer(text)
+
+
+async def CommandAskToMentor(msg: types.Message):
+    user_id = msg.from_user.id
+    user = get_user_data(user_id)
+
+    if user["role"] != EnumUserRoles.STUDENT and user["role"] != EnumUserRoles.ADMIN:
+        return await msg.reply(
+            text="Вопрос могут отправлять только ученики и участники ивента"
+        )
+
+    content = msg.text.split(f"/{EnumCommands.ASK} ")
+    content_length = len(content)
+
+    if content_length != 2:
+        return await msg.reply(
+            "Вопрос необходимо задать в таком формате:\n/ask [название ивента] | [вопрос]"
+        )
+
+    content_2 = content[1].split("|")
+    content_2_length = len(content_2)
+
+    if content_2_length != 2:
+        return await msg.reply(
+            "Вопрос необходимо задать в таком формате:\n/ask [название ивента] | [вопрос]"
+        )
+
+    event_name = content_2[0]
+
+    if not event_name:
+        return await msg.reply(
+            "Вопрос необходимо задать в таком формате:\n/ask [название ивента] | [вопрос]"
+        )
+
+    event = get_event_by_name(event_name)
+
+    if not event.get("event"):
+        return await msg.reply("Мероприятие не найдено")
+
+    mentor_id = event.get("event")["mentor_id"]
+
+    if not mentor_id:
+        return await msg.reply("Нет наставника для этого мероприятия")
+
+    mentor = get_user_data(user_id=mentor_id)
+    message = content[1].split("|")[1]
+
+    create_question(user_id, mentor_id, event.get("id"), message)
+
+    await bot.send_message(
+        int(mentor_id),
+        f'Вы получили вопрос от участника события "{event.get("event")["title"]}".\nТекст: {message}',
+    )
+
+    return await msg.reply(
+        f'Ваш вопрос по событию "{event.get("event")["title"]}" отправлен преподавателю {mentor["last_name"]} {mentor["first_name"]}'
+    )

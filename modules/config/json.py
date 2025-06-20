@@ -46,16 +46,16 @@ def get_user_data(user_id: int, file_path: str = "data.json") -> Optional[Dict]:
 def get_user_by_name(first: str, last: str):
     users = get_users()
     user_id: str = ""
-    
+
     for id, data in users.items():
-        if data["first_name"].lower() == first.lower() and data["last_name"].lower() == last.lower():
+        if (
+            data["first_name"].lower() == first.lower()
+            and data["last_name"].lower() == last.lower()
+        ):
             user_id = str(id)
 
     user = get_user_data(user_id)
-    return {
-        "user": user,
-        "id": user_id
-    }
+    return {"user": user, "id": user_id}
 
 
 def get_events_data(file_path: str = "data.json") -> dict:
@@ -79,11 +79,7 @@ def get_event_by_name(name: str) -> dict:
             event_id = id
 
     event = get_event(event_id)
-    print(event)
-    return {
-        "event": event,
-        "id": event_id
-    }
+    return {"event": event, "id": event_id}
 
 
 def create_event(date: str, max: int, duration: str, desc: str, name: str):
@@ -113,9 +109,7 @@ def update_event(event_id: int, key: str, value, file_path: str = "data.json"):
     write_data(data, file_path)
 
 
-def create_user(
-    user_id: int, name: str, _role: EnumUserRoles = EnumUserRoles.STUDENT
-):
+def create_user(user_id: int, name: str, _role: EnumUserRoles = EnumUserRoles.STUDENT):
     data = read_data()
     first_name = name.split()[1]
     last_name = name.split()[0]
@@ -126,7 +120,7 @@ def create_user(
             "last_name": last_name,
             "role": str(_role),
             "events": [],
-            "created_at": datetime(1900, 1, 1).now().date().isoformat(),
+            "created_at": datetime.now().date().isoformat(),
         }
     }
 
@@ -140,4 +134,22 @@ def remove_user(user_id: int) -> bool:
         return False
 
     data["users"].pop(str(user_id))
+    write_data(data)
+
+
+def create_question(caller_id: int, mentor_id: str, event_id: str, content: str):
+    data = read_data()
+
+    id = uuid.uuid4()
+
+    data["questions"] = {
+        str(id): {
+            "caller_id": str(caller_id),
+            "mentor_id": mentor_id,
+            "event_id": event_id,
+            "msg": content,
+            "created_at": datetime.now().date().isoformat(),
+        }
+    }
+
     write_data(data)

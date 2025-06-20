@@ -1,4 +1,5 @@
 import asyncio
+import re
 
 from aiogram import types, F
 from aiogram.filters.command import Command
@@ -9,10 +10,11 @@ from modules.callbacks import (
     CallbackCreateEvent,
     CallbackRegisterToEvent,
     CallbackAddMentor,
-    CallbackAddProjectsMentor
+    CallbackAddProjectsMentor,
 )
 from modules.commands import (
     CommandAddMentor,
+    CommandAskToMentor,
     CommandCancel,
     CommandCreateEvent,
     CommandGetActiveEvents,
@@ -23,7 +25,7 @@ from modules.commands import (
     CommandInfo,
     CommandRegister,
     CommandGetEvents,
-    CommandAddProjectsMentor
+    CommandAddProjectsMentor,
 )
 from modules.config.config import bot, dp
 from modules.config.json import init_json
@@ -121,6 +123,11 @@ async def callback_add_new_mentor(msg: types.Message):
 @dp.message(Command(EnumCommands.GET_MENTORS))
 async def cmd_get_mentors(msg: types.Message):
     return await CommandGetMentors(msg)
+
+
+@dp.message(F.text.startswith(f"/{EnumCommands.ASK}"))
+async def cmd_ask(msg: types.Message):
+    return await CommandAskToMentor(msg)
 
 
 async def main():
