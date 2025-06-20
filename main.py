@@ -10,6 +10,8 @@ from modules.callbacks import (
     CallbackRegisterToEvent,
 )
 from modules.commands import (
+    CommandAddNewMentor,
+    CommandCancel,
     CommandCreateEvent,
     CommandLogout,
     CommandMyProfile,
@@ -18,9 +20,9 @@ from modules.commands import (
     CommandRegister,
     CommandGetEvents,
 )
-from modules.config.config import bot, storage, dp
+from modules.config.config import bot, dp
 from modules.config.json import init_json
-from modules.constants import EnumCommands, EnumUserRoles, EnumStorageTokens
+from modules.constants import EnumCommands, EnumUserRoles
 from modules.data import get_main_kb
 
 init_json()
@@ -29,6 +31,11 @@ init_json()
 @dp.message(Command(EnumCommands.START))
 async def cmd_start(msg: types.Message):
     return await CommandStart(msg)
+
+
+@dp.message(Command(EnumCommands.CANCEL))
+async def cmd_start(msg: types.Message):
+    return await CommandCancel(msg)
 
 
 @dp.message(Command(EnumCommands.INFO))
@@ -79,6 +86,13 @@ async def cmd_get_events(msg: types.Message):
 @dp.callback_query(F.data.split(":")[0] == "register_to_event")
 async def register_to_event(callback: types.CallbackQuery):
     return await CallbackRegisterToEvent(callback)
+
+
+@dp.message(Command(EnumCommands.ADD_MENTOR))
+async def cmd_add_new_mentor(msg: types.Message):
+    return await CommandAddNewMentor(msg)
+
+
 
 
 async def main():

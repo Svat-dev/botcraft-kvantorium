@@ -32,10 +32,30 @@ def update_user(user_id: int, key: str, value, file_path: str = "data.json"):
     write_data(data, file_path)
 
 
-def get_user_data(user_id: int, file_path: str = "data.json") -> Optional[Dict]:
+def get_users(file_path: str = "data.json") -> Optional[dict]:
     data = read_data(file_path)
+    return data["users"]
 
-    return data["users"].get(str(user_id))
+
+def get_user_data(user_id: int, file_path: str = "data.json") -> Optional[Dict]:
+    users = get_users(file_path)
+
+    return users.get(str(user_id))
+
+
+def get_user_by_name(first: str, last: str):
+    users = get_users()
+    user_id: str = ""
+    
+    for id, data in users.items():
+        if data["first_name"].lower() == first.lower() and data["last_name"].lower() == last.lower():
+            user_id = str(id)
+
+    user = get_user_data(user_id)
+    return {
+        "user": user,
+        "id": user_id
+    }
 
 
 def get_events_data(file_path: str = "data.json") -> dict:
@@ -48,6 +68,21 @@ def get_event(event_id: str) -> dict:
     events = get_events_data()
 
     return events.get(event_id)
+
+
+def get_event_by_name(name: str) -> dict:
+    events = get_events_data()
+    event_id: str = ""
+    
+    for id, data in events.items():
+        if data["title"] == name:
+            event_id = id
+
+    event = get_event(event_id)
+    return {
+        "event": event,
+        "id": event_id
+    }
 
 
 def create_event(date: str, max: int, duration: str, desc: str, name: str):

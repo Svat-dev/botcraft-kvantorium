@@ -1,6 +1,8 @@
 from aiogram import types
 
 from modules.config.json import (
+    get_event_by_name,
+    get_user_by_name,
     remove_user,
     create_user,
     get_user_data,
@@ -98,3 +100,59 @@ async def CallbackRegisterToEvent(callback: types.CallbackQuery):
     update_event(event_id, "participants", {str(user): {}})
     update_user(user_id, "events", {event_id: {}})
     await msg.answer(f'Вы успешно зарегистрировались на ивент "{event["title"]}"!')
+
+
+async def CallbackAddMentor(msg: types.Message):
+    user_id = msg.from_user.id
+    local = await dp.storage.get_data(str(user_id))
+
+    if local[EnumStorageTokens.COMMAND_IN_ACTION] != EnumCommands.ADD_MENTOR:
+        return False
+
+    msg_data = msg.text.split(":")[1]
+    last_name = msg_data.split("")[0]
+    first_name = msg_data.split("")[1]
+
+    user = get_user_by_name(first_name, last_name)
+    user_role = user.get("user")["role"]
+
+    if not user.get("user"):
+        return await msg.reply("Такого пользваотеля нет")
+    elif user_role == EnumUserRoles.MENTOR or user_role == EnumUserRoles.ADMIN or user_role == EnumUserRoles.MODER:
+        return await msg.reply("Этого пользователя добавить в натсавники нельзя")
+
+    update_user(user.get("id"), "role", EnumUserRoles.MENTOR)
+
+    return await msg.reply("Наставник успешно добавлен!")
+
+
+async def CallbackAddProjectsMentor(msg: types.Message):
+    user_id = msg.from_user.id
+    local = await dp.storage.get_data(str(user_id))
+
+    if local[EnumStorageTokens.COMMAND_IN_ACTION] != EnumCommands.ADD_MENTOR_TO_PROJECT:
+        return False
+    
+    msg_data = msg.text.split(":")[1]
+    event_name = msg_data.split("-")[0]
+    last_name = msg_data.split("-")[1]
+    first_name = msg_data.split("-")[2]
+
+    user = get_user_by_name(first_name, last_name)
+    user_role = user.get("user")["role"]
+
+    if not user.get("user"):
+        return await msg.reply("Такого пользваотеля нет")
+    
+    if user_role == EnumUserRoles.MENTOR:
+        event = get_event_by_name(event_name)
+
+        if not event.get("event"):
+            return await msg.reply("Такого ивента нет")
+
+        update_event(event.get("id"), "mentor_id", user.get("id"))
+        update_user(user.get("id"), "events", {event.get("id"): {}})
+
+        return await msg.reply("Наставник успешно добавлен в проект")
+    else:
+        return await msg.reply("Этот пользователь не является преподавателем")

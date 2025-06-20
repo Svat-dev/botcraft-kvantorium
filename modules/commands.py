@@ -134,3 +134,43 @@ async def CommandGetEvents(msg: types.Message):
             text=f"{event['title']}\n{event["desc"]}\nДата: {date} {time_start} - {time_end}\nМакс. участников: {event["participants_limit"]}",
             reply_markup=get_events_inline_kb(id).as_markup(),
         )
+
+
+async def CommandAddProjectsMentor(msg: types.Message):
+    user_id = msg.from_user.id
+    user = get_user_data(user_id)
+
+    if user["role"] != EnumUserRoles.ADMIN or user["role"] != EnumUserRoles.MODER:
+        return await msg.reply("У вас недостаточно прав!")
+    
+    await dp.storage.set_data(
+        str(msg.from_user.id),
+        {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.ADD_MENTOR_TO_PROJECT},
+    )
+
+    return await msg.reply("Отправьте мне ФИ преподавателя и название ивента\nвот так: [название ивента]-[фамилия]-[имя]")
+
+async def CommandAddMentor(msg: types.Message):
+    user_id = msg.from_user.id
+    user = get_user_data(user_id)
+
+    if user["role"] != EnumUserRoles.ADMIN or user["role"] != EnumUserRoles.MODER:
+        return await msg.reply("У вас недостаточно прав!")
+    
+    await dp.storage.set_data(
+        str(msg.from_user.id),
+        {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.ADD_MENTOR},
+    )
+
+    return await msg.reply("Отправьте мне ФИ преподавателя\nвот так: [фамилия] [имя]")
+
+
+async def CommandCancel(msg: types.Message):
+    user_id = msg.from_user.id
+    local = await dp.storage.get_data(str(user_id))
+
+    if local[EnumStorageTokens.COMMAND_IN_ACTION] != EnumCommands.START:
+        await msg.reply("Вы отменили действие")
+        return await dp.storage.set_data(str(user_id), {f"{EnumStorageTokens.COMMAND_IN_ACTION}": None})
+    else:
+        return False

@@ -1,15 +1,16 @@
 class EnumCommands:
     START = "start"
+    CANCEL = "cancel"
     INFO = "info"
     CREATE_EVENT = "create_event"
     EVENTS = "events"
-    MY_EVENTS = "my_events"
     ASK = "ask"
     VOTE_PROJECT = "vote_project"
-    LOGIN = "login"
     REGISTER = "register"
     LOGOUT = "logout"
     PROFILE = "profile"
+    ADD_MENTOR = "add_mentor"
+    ADD_MENTOR_TO_PROJECT = "add_projects_mentor"
 
 
 class EnumUserRoles:
