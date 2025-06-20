@@ -4,6 +4,7 @@ from modules.config.json import (
     get_user_data,
     get_events_data,
     get_event,
+    get_users,
 )
 from modules.constants import EnumUserRoles, EnumStorageTokens, EnumCommands
 from modules.config.config import dp
@@ -182,3 +183,25 @@ async def CommandCancel(msg: types.Message):
         return await dp.storage.set_data(str(user_id), {f"{EnumStorageTokens.COMMAND_IN_ACTION}": None})
     else:
         return False
+
+
+async def CommandGetMentors(msg: types.Message):
+    user_id = msg.from_user.id
+    user = get_user_data(user_id)
+
+    users = get_users()
+    index = 1
+    text: str = ""
+
+    if user["role"] != EnumUserRoles.ADMIN and user["role"] != EnumUserRoles.MODER:
+        return await msg.reply("У вас недостаточно прав!")
+
+    for id, data in users.items():
+        if data["role"] == EnumUserRoles.MENTOR:
+            _user = data
+            text = f"{index}. {_user["last_name"]} {_user["first_name"]}"
+            index += 1
+
+    await msg.reply("Вот все преподаватели:")
+    return await msg.answer(text)
+

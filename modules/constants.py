@@ -11,6 +11,7 @@ class EnumCommands:
     PROFILE = "profile"
     ADD_MENTOR = "add_mentor"
     ADD_MENTOR_TO_PROJECT = "add_projects_mentor"
+    GET_MENTORS = "mentors"
 
 
 class EnumUserRoles:

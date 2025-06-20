@@ -15,6 +15,7 @@ from modules.commands import (
     CommandAddMentor,
     CommandCancel,
     CommandCreateEvent,
+    CommandGetMentors,
     CommandLogout,
     CommandMyProfile,
     CommandStart,
@@ -109,6 +110,11 @@ async def callback_add_mentor_to_project(msg: types.Message):
 @dp.message(F.text.lower().startswith("фио преподавателя:"))
 async def callback_add_new_mentor(msg: types.Message):
     return await CallbackAddMentor(msg)
+
+
+@dp.message(Command(EnumCommands.GET_MENTORS))
+async def cmd_get_mentors(msg: types.Message):
+    return await CommandGetMentors(msg)
 
 
 async def main():

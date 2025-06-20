@@ -118,8 +118,10 @@ async def CallbackAddMentor(msg: types.Message):
 
     if not user.get("user"):
         return await msg.reply("Такого пользваотеля нет")
-    elif user_role == EnumUserRoles.MENTOR or user_role == EnumUserRoles.ADMIN or user_role == EnumUserRoles.MODER:
-        return await msg.reply("Этого пользователя добавить в натсавники нельзя")
+    elif user_role == EnumUserRoles.ADMIN or user_role == EnumUserRoles.MODER:
+        return await msg.reply("Этого пользователя добавить в наставники нельзя")
+    elif user_role == EnumUserRoles.MENTOR:
+        return await msg.reply("Этот пользовательуже наставник")
 
     update_user(user.get("id"), "role", EnumUserRoles.MENTOR)
 
