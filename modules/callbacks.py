@@ -46,7 +46,7 @@ async def CallbackRegister(msg: types.Message):
     if str(user_id) in data["users"]:
         return await msg.reply("Такой пользователь уже существует")
 
-    name = msg.text.split(":")
+    name = msg.text.split(":")[1]
     create_user(user_id, name, EnumUserRoles.STUDENT)
 
     await msg.reply("Аккаунт успешно создан!")
@@ -110,8 +110,8 @@ async def CallbackAddMentor(msg: types.Message):
         return False
 
     msg_data = msg.text.split(":")[1]
-    last_name = msg_data.split("")[0]
-    first_name = msg_data.split("")[1]
+    last_name = msg_data.split()[0]
+    first_name = msg_data.split()[1]
 
     user = get_user_by_name(first_name, last_name)
     user_role = user.get("user")["role"]
@@ -142,7 +142,7 @@ async def CallbackAddProjectsMentor(msg: types.Message):
     user_role = user.get("user")["role"]
 
     if not user.get("user"):
-        return await msg.reply("Такого пользваотеля нет")
+        return await msg.reply("Такого пользователя нет")
     
     if user_role == EnumUserRoles.MENTOR:
         event = get_event_by_name(event_name)

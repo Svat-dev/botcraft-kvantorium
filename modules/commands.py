@@ -129,9 +129,16 @@ async def CommandGetEvents(msg: types.Message):
         hours = int(time_start.split(":")[0]) + int(event["duration"].split(":")[0])
         mins = int(time_start.split(":")[1]) + int(event["duration"].split(":")[1])
         time_end = f"{hours}:{mins}"
+        mentor_id = event["mentor_id"]
+
+        if not mentor_id:
+            mentor_name = "Нет наставника"
+        else:
+            mentor = get_user_data(int(mentor_id))
+            mentor_name = f"{mentor.get("last_name")} {mentor.get("first_name")}"
 
         await msg.answer(
-            text=f"{event['title']}\n{event["desc"]}\nДата: {date} {time_start} - {time_end}\nМакс. участников: {event["participants_limit"]}",
+            text=f"{event['title']}\n{event["desc"]}\nДата: {date} {time_start} - {time_end}\nМакс. участников: {event["participants_limit"]}\nНаставник: {mentor_name}",
             reply_markup=get_events_inline_kb(id).as_markup(),
         )
 
@@ -140,7 +147,7 @@ async def CommandAddProjectsMentor(msg: types.Message):
     user_id = msg.from_user.id
     user = get_user_data(user_id)
 
-    if user["role"] != EnumUserRoles.ADMIN or user["role"] != EnumUserRoles.MODER:
+    if user["role"] != EnumUserRoles.ADMIN and user["role"] != EnumUserRoles.MODER:
         return await msg.reply("У вас недостаточно прав!")
     
     await dp.storage.set_data(
@@ -148,21 +155,22 @@ async def CommandAddProjectsMentor(msg: types.Message):
         {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.ADD_MENTOR_TO_PROJECT},
     )
 
-    return await msg.reply("Отправьте мне ФИ преподавателя и название ивента\nвот так: [название ивента]-[фамилия]-[имя]")
+    return await msg.reply("Отправьте мне ФИ преподавателя и название ивента\nвот так - Добавить преподавателя: [название ивента]-[фамилия]-[имя]")
+
 
 async def CommandAddMentor(msg: types.Message):
     user_id = msg.from_user.id
     user = get_user_data(user_id)
 
-    if user["role"] != EnumUserRoles.ADMIN or user["role"] != EnumUserRoles.MODER:
+    if user["role"] != EnumUserRoles.ADMIN and user["role"] != EnumUserRoles.MODER:
         return await msg.reply("У вас недостаточно прав!")
-    
+
     await dp.storage.set_data(
         str(msg.from_user.id),
         {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.ADD_MENTOR},
     )
 
-    return await msg.reply("Отправьте мне ФИ преподавателя\nвот так: [фамилия] [имя]")
+    return await msg.reply("Отправьте мне ФИ преподавателя\nвот так - ФИО преподавателя: [фамилия] [имя]")
 
 
 async def CommandCancel(msg: types.Message):

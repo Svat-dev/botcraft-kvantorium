@@ -73,12 +73,13 @@ def get_event(event_id: str) -> dict:
 def get_event_by_name(name: str) -> dict:
     events = get_events_data()
     event_id: str = ""
-    
+
     for id, data in events.items():
-        if data["title"] == name:
+        if data["title"].lower().replace(" ", "") == name.lower().replace(" ", ""):
             event_id = id
 
     event = get_event(event_id)
+    print(event)
     return {
         "event": event,
         "id": event_id
@@ -108,7 +109,7 @@ def update_event(event_id: int, key: str, value, file_path: str = "data.json"):
     if event_id not in data["events"]:
         data["events"][event_id] = {}
 
-    data["users"][event_id][key] = value
+    data["events"][event_id][key] = value
     write_data(data, file_path)
 
 

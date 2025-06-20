@@ -8,9 +8,11 @@ from modules.callbacks import (
     CallbackRegister,
     CallbackCreateEvent,
     CallbackRegisterToEvent,
+    CallbackAddMentor,
+    CallbackAddProjectsMentor
 )
 from modules.commands import (
-    CommandAddNewMentor,
+    CommandAddMentor,
     CommandCancel,
     CommandCreateEvent,
     CommandLogout,
@@ -19,6 +21,7 @@ from modules.commands import (
     CommandInfo,
     CommandRegister,
     CommandGetEvents,
+    CommandAddProjectsMentor
 )
 from modules.config.config import bot, dp
 from modules.config.json import init_json
@@ -48,7 +51,7 @@ async def cmd_register(msg: types.Message):
     return await CommandRegister(msg)
 
 
-@dp.message(F.text.startswith("ФИО:"))
+@dp.message(F.text.lower().startswith("фио:"))
 async def cmd_continue_register(msg: types.Message):
     return await CallbackRegister(msg)
 
@@ -90,9 +93,22 @@ async def register_to_event(callback: types.CallbackQuery):
 
 @dp.message(Command(EnumCommands.ADD_MENTOR))
 async def cmd_add_new_mentor(msg: types.Message):
-    return await CommandAddNewMentor(msg)
+    return await CommandAddMentor(msg)
 
 
+@dp.message(Command(EnumCommands.ADD_MENTOR_TO_PROJECT))
+async def cmd_add_mentor_to_project(msg: types.Message):
+    return await CommandAddProjectsMentor(msg)
+
+
+@dp.message(F.text.lower().startswith("добавить преподавателя:"))
+async def callback_add_mentor_to_project(msg: types.Message):
+    return await CallbackAddProjectsMentor(msg)
+
+
+@dp.message(F.text.lower().startswith("фио преподавателя:"))
+async def callback_add_new_mentor(msg: types.Message):
+    return await CallbackAddMentor(msg)
 
 
 async def main():
