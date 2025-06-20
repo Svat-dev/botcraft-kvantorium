@@ -131,6 +131,7 @@ async def CommandGetEvents(msg: types.Message):
         mins = int(time_start.split(":")[1]) + int(event["duration"].split(":")[1])
         time_end = f"{hours}:{mins}"
         mentor_id = event["mentor_id"]
+        participants_count: int = 0
 
         if not mentor_id:
             mentor_name = "Нет наставника"
@@ -138,8 +139,18 @@ async def CommandGetEvents(msg: types.Message):
             mentor = get_user_data(int(mentor_id))
             mentor_name = f"{mentor.get("last_name")} {mentor.get("first_name")}"
 
+        for _ in event["participants"].values():
+            participants_count += 1
+
+        if participants_count == 0:
+            participants = f"Макс. участников: {event["participants_limit"]}"
+        elif participants_count == int(event["participants_limit"]):
+            participants = f"Мест больше нет"
+        else:
+            participants = f"Участники: {participants_count}/{event["participants_limit"]}"
+
         await msg.answer(
-            text=f"{event['title']}\n{event["desc"]}\nДата: {date} {time_start} - {time_end}\nМакс. участников: {event["participants_limit"]}\nНаставник: {mentor_name}",
+            text=f"{event['title']}\n{event["desc"]}\nДата: {date} {time_start} - {time_end}\n{participants}\nНаставник: {mentor_name}",
             reply_markup=get_events_inline_kb(id).as_markup(),
         )
 
