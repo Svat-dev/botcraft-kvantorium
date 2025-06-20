@@ -73,3 +73,16 @@ def get_events_inline_kb(event_id: str) -> InlineKeyboardBuilder:
     )
 
     return builder
+
+
+def get_answer_question_inline_kb(question_id: str) -> InlineKeyboardBuilder:
+    builder = InlineKeyboardBuilder()
+
+    builder.add(
+        types.InlineKeyboardButton(
+            text="Ответить",
+            callback_data=f"answer_a_question:{question_id}",
+        ),
+    )
+
+    return builder

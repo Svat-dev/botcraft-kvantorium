@@ -12,7 +12,7 @@ from modules.config.json import (
 )
 from modules.constants import EnumUserRoles, EnumStorageTokens, EnumCommands
 from modules.config.config import dp, bot
-from modules.data import get_events_inline_kb
+from modules.data import get_answer_question_inline_kb, get_events_inline_kb
 
 
 async def CommandStart(msg: types.Message):
@@ -318,11 +318,14 @@ async def CommandAskToMentor(msg: types.Message):
     mentor = get_user_data(user_id=mentor_id)
     message = content[1].split("|")[1]
 
-    create_question(user_id, mentor_id, event.get("id"), message)
+    question_id = create_question(user_id, mentor_id, event.get("id"), message)
+
+    builder = get_answer_question_inline_kb(question_id)
 
     await bot.send_message(
         int(mentor_id),
         f'Вы получили вопрос от участника события "{event.get("event")["title"]}".\nТекст: {message}',
+        reply_markup=builder.as_markup(),
     )
 
     return await msg.reply(

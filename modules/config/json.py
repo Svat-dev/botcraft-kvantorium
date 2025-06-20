@@ -137,7 +137,7 @@ def remove_user(user_id: int) -> bool:
     write_data(data)
 
 
-def create_question(caller_id: int, mentor_id: str, event_id: str, content: str):
+def create_question(caller_id: int, mentor_id: str, event_id: str, content: str) -> str:
     data = read_data()
 
     id = uuid.uuid4()
@@ -153,3 +153,5 @@ def create_question(caller_id: int, mentor_id: str, event_id: str, content: str)
     }
 
     write_data(data)
+
+    return str(id)
