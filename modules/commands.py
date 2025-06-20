@@ -246,7 +246,7 @@ async def CommandCancel(msg: types.Message):
     if local[EnumStorageTokens.COMMAND_IN_ACTION] != EnumCommands.START:
         await msg.reply("Вы отменили действие")
         return await dp.storage.set_data(
-            str(user_id), {f"{EnumStorageTokens.COMMAND_IN_ACTION}": None}
+            str(user_id), {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.START}
         )
     else:
         return False
