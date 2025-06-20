@@ -129,9 +129,14 @@ async def CommandGetEvents(msg: types.Message):
     for id, event in events:
         date = event["date"].split(" / ")[0]
         time_start = event["date"].split(" / ")[1]
+
         hours = int(time_start.split(":")[0]) + int(event["duration"].split(":")[0])
         mins = int(time_start.split(":")[1]) + int(event["duration"].split(":")[1])
-        time_end = f"{hours}:{mins}"
+
+        time_end = (
+            f"{hours if hours > 9 else f"0{hours}"}:{mins if mins > 9 else f"0{mins}"}"
+        )
+
         mentor_id = event["mentor_id"]
         participants_count: int = 0
 
@@ -149,7 +154,9 @@ async def CommandGetEvents(msg: types.Message):
         elif participants_count == int(event["participants_limit"]):
             participants = f"Мест больше нет"
         else:
-            participants = f"Участники: {participants_count}/{event["participants_limit"]}"
+            participants = (
+                f"Участники: {participants_count}/{event["participants_limit"]}"
+            )
 
         await msg.answer(
             text=f"{event['title']}\n{event["desc"]}\nДата: {date} {time_start} - {time_end}\n{participants}\nНаставник: {mentor_name}",
@@ -159,10 +166,10 @@ async def CommandGetEvents(msg: types.Message):
 
 async def CommandGetActiveEvents(msg: types.Message):
     user_id = msg.from_user.id
-    user = get_user_data(user_id)
+    user = get_user_data(user_id=user_id)
 
     if user["role"] == EnumUserRoles.GUEST:
-        return await msg.reply("Вам необходимо авторизваться")
+        return await msg.reply(text="Вам необходимо авторизоваться")
 
     events = get_events_data()
     index: int = 1
@@ -173,12 +180,23 @@ async def CommandGetActiveEvents(msg: types.Message):
         date = event["date"].split("/")[0].replace(" ", "")
         date_str = event["date"].replace(" ", "")
 
+        time_start = event["date"].split("/")[1].replace(" ", "").split(":")
+        time_end = event["duration"].split(":")
+
+        hours = int(time_start[0]) + int(time_end[0])
+        mins = int(time_start[1]) + int(time_end[1])
+
+        total_hours = (mins // 60) + hours
+        total_mins = mins - 60 if (mins % 60) > 0 else mins
+
+        time = f"{total_hours if total_hours > 9 else f"0{total_hours}"}:{total_mins if total_mins > 9 else f"0{total_mins}"}"
+
         date_start = datetime.strptime(date_str, "%Y.%m.%d/%H:%M")
-        date_end = datetime.strptime(f"{date}/{event["duration"]}", "%Y.%m.%d/%H:%M")
-        date_current = datetime(1900, 1, 1).today()
+        date_end = datetime.strptime(f"{date}/{time}", "%Y.%m.%d/%H:%M")
+        date_current = datetime(year=1900, month=1, day=1).today()
 
         if date_start < date_current and date_end > date_current:
-            await msg.answer(f"{index}. {event["title"]}")
+            await msg.answer(f"{index}. {event["title"]}\n\tВремя окончания: {time}")
             index += 1
 
     if index == 1:
@@ -191,13 +209,15 @@ async def CommandAddProjectsMentor(msg: types.Message):
 
     if user["role"] != EnumUserRoles.ADMIN and user["role"] != EnumUserRoles.MODER:
         return await msg.reply("У вас недостаточно прав!")
-    
+
     await dp.storage.set_data(
         str(msg.from_user.id),
         {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.ADD_MENTOR_TO_PROJECT},
     )
 
-    return await msg.reply("Отправьте мне ФИ преподавателя и название ивента\nвот так - Добавить преподавателя: [название ивента]-[фамилия]-[имя]")
+    return await msg.reply(
+        "Отправьте мне ФИ преподавателя и название ивента\nвот так - Добавить преподавателя: [название ивента]-[фамилия]-[имя]"
+    )
 
 
 async def CommandAddMentor(msg: types.Message):
@@ -212,7 +232,9 @@ async def CommandAddMentor(msg: types.Message):
         {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.ADD_MENTOR},
     )
 
-    return await msg.reply("Отправьте мне ФИ преподавателя\nвот так - ФИО преподавателя: [фамилия] [имя]")
+    return await msg.reply(
+        "Отправьте мне ФИ преподавателя\nвот так - ФИО преподавателя: [фамилия] [имя]"
+    )
 
 
 async def CommandCancel(msg: types.Message):
@@ -221,7 +243,9 @@ async def CommandCancel(msg: types.Message):
 
     if local[EnumStorageTokens.COMMAND_IN_ACTION] != EnumCommands.START:
         await msg.reply("Вы отменили действие")
-        return await dp.storage.set_data(str(user_id), {f"{EnumStorageTokens.COMMAND_IN_ACTION}": None})
+        return await dp.storage.set_data(
+            str(user_id), {f"{EnumStorageTokens.COMMAND_IN_ACTION}": None}
+        )
     else:
         return False
 
@@ -245,4 +269,3 @@ async def CommandGetMentors(msg: types.Message):
 
     await msg.reply("Вот все преподаватели:")
     return await msg.answer(text)
-
