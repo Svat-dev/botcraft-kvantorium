@@ -2,6 +2,7 @@ class EnumCommands:
     START = "start"
     CANCEL = "cancel"
     INFO = "info"
+    HELP = "help"
     CREATE_EVENT = "create_event"
     EVENTS = "events"
     ACTIVE_EVENTS = "active_events"
@@ -13,6 +14,8 @@ class EnumCommands:
     ADD_MENTOR = "add_mentor"
     ADD_MENTOR_TO_PROJECT = "add_projects_mentor"
     GET_MENTORS = "mentors"
+    ANSWER_QUESTION = "answer"
+    ADD_MODER = "add_moder"
 
 
 class EnumUserRoles:
@@ -25,4 +28,5 @@ class EnumUserRoles:
 
 class EnumStorageTokens:
     COMMAND_IN_ACTION = "command_in_action"
-    USER_ID = "user_id"
+    USER_ID = "user_id",
+    QUESTION_ID = "question_id"

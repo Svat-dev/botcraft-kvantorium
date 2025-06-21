@@ -2,6 +2,7 @@ from aiogram import types
 
 from modules.config.json import (
     get_event_by_name,
+    get_question,
     get_user_by_name,
     remove_user,
     create_user,
@@ -158,3 +159,20 @@ async def CallbackAddProjectsMentor(msg: types.Message):
         return await msg.reply("Наставник успешно добавлен в проект")
     else:
         return await msg.reply("Этот пользователь не является преподавателем")
+
+
+async def CallbackAnswer(callback: types.CallbackQuery):
+    question_id = callback.data.split(":")[1]
+    user_id = await dp.storage.get_data(EnumStorageTokens.USER_ID)
+
+    await callback.message.reply("Отправьте ответ на вопрос - /answer : [ответ]")
+
+    await dp.storage.set_data(
+        str(user_id),
+        {f"{EnumStorageTokens.QUESTION_ID}": question_id}
+    )
+
+    return await dp.storage.set_data(
+        str(user_id),
+        {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.REGISTER}
+    )

@@ -155,3 +155,19 @@ def create_question(caller_id: int, mentor_id: str, event_id: str, content: str)
     write_data(data)
 
     return str(id)
+
+
+def get_question(id: str):
+    data = read_data()
+
+    return data["questions"][id]
+
+
+def remove_question(id: str):
+    data = read_data()
+
+    if id not in data["questions"]:
+        return False
+    
+    data["questions"].pop(id)
+    write_data(data)

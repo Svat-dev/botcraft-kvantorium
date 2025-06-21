@@ -5,6 +5,7 @@ from aiogram import types, F
 from aiogram.filters.command import Command
 
 from modules.callbacks import (
+    CallbackAnswer,
     CallbackLogout,
     CallbackRegister,
     CallbackCreateEvent,
@@ -14,11 +15,13 @@ from modules.callbacks import (
 )
 from modules.commands import (
     CommandAddMentor,
+    CommandAnswer,
     CommandAskToMentor,
     CommandCancel,
     CommandCreateEvent,
     CommandGetActiveEvents,
     CommandGetMentors,
+    CommandHelp,
     CommandLogout,
     CommandMyProfile,
     CommandStart,
@@ -30,7 +33,6 @@ from modules.commands import (
 from modules.config.config import bot, dp
 from modules.config.json import init_json
 from modules.constants import EnumCommands, EnumUserRoles
-from modules.data import get_main_kb
 
 init_json()
 
@@ -130,9 +132,22 @@ async def cmd_ask(msg: types.Message):
     return await CommandAskToMentor(msg)
 
 
+@dp.callback_query(F.data.split(":")[0] == "answer_a_question")
+async def callback_answer(callback: types.CallbackQuery):
+    return await CallbackAnswer(callback)
+
+
+@dp.message(F.text.startswith(f"/{EnumCommands.ANSWER_QUESTION}"))
+async def cmd_answer(msg: types.Message):
+    return await CommandAnswer(msg)
+
+
+@dp.message(Command(EnumCommands.HELP))
+async def cmd_help(msg: types.Message):
+    return await CommandHelp(msg)
+
 async def main():
     await dp.start_polling(bot)
-    await bot.set_my_commands(commands=get_main_kb(EnumUserRoles.GUEST))
 
 
 if __name__ == "__main__":

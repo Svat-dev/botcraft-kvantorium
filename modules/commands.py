@@ -5,14 +5,16 @@ from datetime import datetime
 from modules.config.json import (
     create_question,
     get_event_by_name,
+    get_question,
     get_user_data,
     get_events_data,
     get_event,
     get_users,
+    remove_question,
 )
 from modules.constants import EnumUserRoles, EnumStorageTokens, EnumCommands
 from modules.config.config import dp, bot
-from modules.data import get_answer_question_inline_kb, get_events_inline_kb
+from modules.data import get_answer_question_inline_kb, get_events_inline_kb, get_user_rights
 
 
 async def CommandStart(msg: types.Message):
@@ -26,7 +28,7 @@ async def CommandStart(msg: types.Message):
     await dp.storage.set_data(f"{EnumStorageTokens.USER_ID}", {"data": str(user_id)})
 
     await msg.answer(
-        "Привет, чтобы начать,\nвведи любую команду из предложенных в меню"
+        f"Привет, чтобы начать, введите команду /{EnumCommands.HELP}, чтобы посмотреть список доступных команд"
     )
 
 
@@ -331,3 +333,40 @@ async def CommandAskToMentor(msg: types.Message):
     return await msg.reply(
         f'Ваш вопрос по событию "{event.get("event")["title"]}" отправлен преподавателю {mentor["last_name"]} {mentor["first_name"]}'
     )
+
+
+async def CommandHelp(msg: types.Message):
+    user_id = msg.from_user.id
+    user = get_user_data(user_id)
+
+    role = user["role"] if user else EnumUserRoles.GUEST
+
+    rights = get_user_rights(role)
+    text: str = ""
+
+    for key, desc in rights.items():
+        text += f"/{key} - {desc}\n"
+
+    await msg.reply(text)
+
+
+async def CommandAnswer(msg: types.Message):
+    user_id = msg.from_user.id
+    user = get_user_data(user_id)
+
+    if user["role"] != EnumUserRoles.ADMIN and user["role"] != EnumUserRoles.MENTOR:
+        return await msg.reply("Недостаточно прав")
+
+    local = await dp.storage.get_data(str(user_id))
+    return print(local)
+    question = get_question(local["question_id"])
+
+    if not question:
+        return await msg.reply("Вопрос не найден")
+
+    content = msg.text.split("|")[1]
+
+    await bot.send_message(int(question["caller_id"]), f"Вам ответил(-/a) {user["first_name"]} {user["last_name"]}:\n{content}")
+    await msg.reply("Ваш ответ был отправлен")
+
+    remove_question(local["question_id"])
