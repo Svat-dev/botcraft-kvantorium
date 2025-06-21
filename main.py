@@ -5,6 +5,7 @@ from aiogram import types, F
 from aiogram.filters.command import Command
 
 from modules.callbacks import (
+    CallbackAddModer,
     CallbackAnswer,
     CallbackLogout,
     CallbackRegister,
@@ -15,6 +16,7 @@ from modules.callbacks import (
 )
 from modules.commands import (
     CommandAddMentor,
+    CommandAddModer,
     CommandAnswer,
     CommandAskToMentor,
     CommandCancel,
@@ -107,6 +109,11 @@ async def cmd_add_new_mentor(msg: types.Message):
     return await CommandAddMentor(msg)
 
 
+@dp.message(Command(EnumCommands.ADD_MODER))
+async def cmd_add_new_moder(msg: types.Message):
+    return await CommandAddModer(msg)
+
+
 @dp.message(Command(EnumCommands.ADD_MENTOR_TO_PROJECT))
 async def cmd_add_mentor_to_project(msg: types.Message):
     return await CommandAddProjectsMentor(msg)
@@ -120,6 +127,11 @@ async def callback_add_mentor_to_project(msg: types.Message):
 @dp.message(F.text.lower().startswith("фио преподавателя:"))
 async def callback_add_new_mentor(msg: types.Message):
     return await CallbackAddMentor(msg)
+
+
+@dp.message(F.text.lower().startswith("фио модератора:"))
+async def callback_add_new_moder(msg: types.Message):
+    return await CallbackAddModer(msg)
 
 
 @dp.message(Command(EnumCommands.GET_MENTORS))

@@ -116,7 +116,7 @@ async def CommandCreateEvent(msg: types.Message):
         {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.CREATE_EVENT},
     )
     return await msg.reply(
-        "Чтобы создать ивент отправьте сообщение в таком формате:\nИвент - [название]/[описание]/[макс. участников][дата проведения (год|день|месяц)]/[время проведения (часы:минуты)]/[длительность (часы:минуты)]"
+        "Чтобы создать ивент отправьте сообщение в таком формате:\nИвент - [название]/[описание]/[макс. участников][дата проведения (день.месяц.год)]/[время проведения (часы:минуты)]/[длительность (часы:минуты)]"
     )
 
 
@@ -238,6 +238,23 @@ async def CommandAddMentor(msg: types.Message):
 
     return await msg.reply(
         "Отправьте мне ФИ преподавателя\nвот так - ФИО преподавателя: [фамилия] [имя]"
+    )
+
+
+async def CommandAddModer(msg: types.Message):
+    user_id = msg.from_user.id
+    user = get_user_data(user_id)
+
+    if user["role"] != EnumUserRoles.ADMIN:
+        return await msg.reply("У вас недостаточно прав!")
+
+    await dp.storage.set_data(
+        str(msg.from_user.id),
+        {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.ADD_MODER},
+    )
+
+    return await msg.reply(
+        "Отправьте мне ФИ пользователя\nвот так - ФИО модератора: [фамилия] [имя]"
     )
 
 

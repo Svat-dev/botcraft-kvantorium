@@ -67,12 +67,12 @@ async def CallbackCreateEvent(msg: types.Message):
     title = event_info[0]
     desc = event_info[1]
     limit = int(event_info[2])
-    date = event_info[3].split("|")
+    date = event_info[3].split(".")
     time = event_info[4]
     duration = event_info[5]
 
     create_event(
-        f"{date[0]}.{date[2]}.{date[1]} / {time}", limit, duration, desc, title
+        f"{date[2]}.{date[1]}.{date[0]} / {time}", limit, duration, desc, title
     )
 
     await dp.storage.update_data(
@@ -176,3 +176,29 @@ async def CallbackAnswer(callback: types.CallbackQuery):
         str(user_id),
         {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.REGISTER}
     )
+
+
+async def CallbackAddModer(msg: types.Message):
+    user_id = msg.from_user.id
+    local = await dp.storage.get_data(str(user_id))
+
+    if local[EnumStorageTokens.COMMAND_IN_ACTION] != EnumCommands.ADD_MODER:
+        return False
+
+    msg_data = msg.text.split(":")[1]
+    last_name = msg_data.split()[0]
+    first_name = msg_data.split()[1]
+
+    user = get_user_by_name(first_name, last_name)
+    user_role = user.get("user")["role"]
+
+    if not user.get("user"):
+        return await msg.reply("Такого пользователя нет")
+    elif user_role == EnumUserRoles.ADMIN:
+        return await msg.reply("Этого пользователя добавить в модератора нельзя")
+    elif user_role == EnumUserRoles.MENTOR:
+        return await msg.reply("Этот пользователь уже модератор")
+
+    update_user(user.get("id"), "role", EnumUserRoles.MODER)
+
+    return await msg.reply("Модератор успешно добавлен!")
