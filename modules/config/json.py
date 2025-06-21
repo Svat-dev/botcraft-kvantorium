@@ -114,15 +114,13 @@ def create_user(user_id: int, name: str, _role: EnumUserRoles = EnumUserRoles.ST
     first_name = name.split()[1]
     last_name = name.split()[0]
 
-    data["users"] = {
-        str(user_id): {
+    data["users"].update({str(user_id): {
             "first_name": first_name,
             "last_name": last_name,
             "role": str(_role),
             "events": [],
             "created_at": datetime.now().date().isoformat(),
-        }
-    }
+        }})
 
     write_data(data)
 

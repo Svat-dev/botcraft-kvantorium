@@ -86,6 +86,7 @@ async def CallbackRegisterToEvent(callback: types.CallbackQuery):
     local = await dp.storage.get_data(EnumStorageTokens.USER_ID)
     msg = callback.message
 
+    return await msg.answer("К сожалению данная функция в тесте")
     user_id = local["data"]
     user = get_user_data(user_id)
 
@@ -174,7 +175,7 @@ async def CallbackAnswer(callback: types.CallbackQuery):
 
     return await dp.storage.set_data(
         str(user_id),
-        {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.REGISTER}
+        {f"{EnumStorageTokens.COMMAND_IN_ACTION}": EnumCommands.ANSWER_QUESTION}
     )
 
 
